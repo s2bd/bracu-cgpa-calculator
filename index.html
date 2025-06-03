@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGPA Calculator</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mui/material@5.15.0/dist/material.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="ui.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>CGPA Calculator</h1>
+
+    <div id="custom-boundaries" style="display: none">
+      <h3>Custom Grade Boundaries</h3>
+      <textarea id="custom-boundary-text" placeholder="Example: \n90:A:4.0\n80:B:3.0"></textarea>
+      <button onclick="applyCustomBoundaries()">Apply</button>
+    </div>
+
+    <div class="actions">
+      <button onclick="addSemester()">Add Semester</button>
+      or Upload <a href="https://connect.bracu.ac.bd/">Connect</a> Gradesheet: <input type="file" accept="application/pdf" onchange="handlePDF(event)" />
+    </div>
+
+    <div id="semesters"></div>
+
+    <h2 id="cgpa-display">CGPA: 0.00</h2>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <script src="algorithms.js"></script>
+</body>
+</html>
