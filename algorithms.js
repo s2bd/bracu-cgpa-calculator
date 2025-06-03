@@ -50,7 +50,12 @@ function addSemester(data = {}) {
   container.innerHTML = `
     <input placeholder="Semester Name" class="semester-title" value="${data.title || ''}" />
     <div class="courses"></div>
-    <button onclick="addCourse(this)">Add Course</button>
+    <button
+  onclick="addCourse(this)"
+  class="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-transform duration-200 hover:scale-105 shadow-md"
+>
+  + Add Course
+</button>
     <div class="semester-gpa">GPA: 0.00</div>
   `;
   document.getElementById('semesters').appendChild(container);
@@ -60,16 +65,24 @@ function addSemester(data = {}) {
 function addCourse(button, courseData = {}) {
   const coursesDiv = button.parentElement.querySelector('.courses');
   const div = document.createElement('div');
-  div.className = 'course-row';
+  div.className = 'course-row grid grid-cols-[70px_1fr_80px_80px] gap-3 items-center p-3 border border-slate-400 rounded-lg transition-all duration-300 ease-in-out hover:shadow-md bg-white';
   div.innerHTML = `
-    <input placeholder="Course ID" value="${courseData.id || ''}" />
-    <input placeholder="Course Name" value="${courseData.name || ''}" />
-    <input placeholder="GPA" type="number" step="0.1" value="${courseData.gpa || ''}" oninput="syncFromGPA(this)" />
-    <input placeholder="Mark" type="number" value="${courseData.mark || ''}" oninput="syncFromMark(this)" />
+    <input placeholder="ID" value="${courseData.id || ''}" class="text-sm px-2 py-1 rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+    <input placeholder="Course Name" value="${courseData.name || ''}" class="text-sm px-3 py-1 rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+    <input placeholder="GPA" type="number" step="0.1" value="${courseData.gpa || ''}" oninput="syncFromGPA(this)" class="text-sm text-center px-2 py-1 rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+    <input placeholder="Mark" type="number" value="${courseData.mark || ''}" oninput="syncFromMark(this)" class="text-sm text-center px-2 py-1 rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
   `;
   coursesDiv.appendChild(div);
+
+  // Optional: fade-in animation
+  div.classList.add('opacity-0');
+  requestAnimationFrame(() => {
+    div.classList.add('transition-opacity', 'duration-500', 'opacity-100');
+  });
+
   calculateCGPA();
 }
+
 
 function syncFromMark(input) {
   const mark = parseFloat(input.value);
