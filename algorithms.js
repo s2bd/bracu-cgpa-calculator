@@ -13,6 +13,13 @@ const gradePolicies = {
     { min: 52, grade: 'D', gpa: 1.0 },
     { min: 50, grade: 'D-', gpa: 0.7 },
     { min: 0, grade: 'F', gpa: 0.0 }
+  ],
+  '2': [
+    { min: 80, grade: 'A', gpa: 4.0 },
+    { min: 65, grade: 'B', gpa: 3.0 },
+    { min: 55, grade: 'C', gpa: 2.0 },
+    { min: 50, grade: 'D', gpa: 1.0 },
+    { min: 0, grade: 'F', gpa: 0.0 }
   ]
 };
 
@@ -57,34 +64,50 @@ function addCourse(button, courseData = {}) {
   div.innerHTML = `
     <input placeholder="Course ID" value="${courseData.id || ''}" />
     <input placeholder="Course Name" value="${courseData.name || ''}" />
-    <input placeholder="Credit" type="number" value="${courseData.credit || ''}" />
-    <input placeholder="Mark" type="number" value="${courseData.mark || ''}" oninput="calculateCGPA()" />
+    <input placeholder="GPA" type="number" step="0.1" value="${courseData.gpa || ''}" oninput="syncFromGPA(this)" />
+    <input placeholder="Mark" type="number" value="${courseData.mark || ''}" oninput="syncFromMark(this)" />
   `;
   coursesDiv.appendChild(div);
   calculateCGPA();
 }
 
+function syncFromMark(input) {
+  const mark = parseFloat(input.value);
+  const gpaInput = input.previousElementSibling;
+  if (!isNaN(mark)) {
+    const entry = currentPolicy.find(p => mark >= p.min);
+    if (entry) gpaInput.value = entry.gpa;
+  }
+  calculateCGPA();
+}
+
+function syncFromGPA(input) {
+  const gpa = parseFloat(input.value);
+  const markInput = input.nextElementSibling;
+  if (!isNaN(gpa)) {
+    const entry = currentPolicy.find(p => p.gpa === gpa);
+    if (entry) markInput.value = entry.min;
+  }
+  calculateCGPA();
+}
+
 function calculateCGPA() {
-  let totalQP = 0, totalCredits = 0;
+  let totalQP = 0, totalCourses = 0;
   document.querySelectorAll('.semester').forEach(sem => {
-    let semQP = 0, semCredits = 0;
+    let semQP = 0, semCourses = 0;
     sem.querySelectorAll('.course-row').forEach(course => {
-      const credit = parseFloat(course.children[2].value);
-      const mark = parseFloat(course.children[3].value);
-      if (!isNaN(credit) && !isNaN(mark)) {
-        const entry = currentPolicy.find(p => mark >= p.min);
-        if (entry) {
-          semQP += credit * entry.gpa;
-          semCredits += credit;
-        }
+      const gpa = parseFloat(course.children[2].value);
+      if (!isNaN(gpa)) {
+        semQP += gpa;
+        semCourses += 1;
       }
     });
-    const gpa = semCredits ? (semQP / semCredits).toFixed(2) : '0.00';
+    const gpa = semCourses ? (semQP / semCourses).toFixed(2) : '0.00';
     sem.querySelector('.semester-gpa').textContent = `GPA: ${gpa}`;
     totalQP += semQP;
-    totalCredits += semCredits;
+    totalCourses += semCourses;
   });
-  const cgpa = totalCredits ? (totalQP / totalCredits).toFixed(2) : '0.00';
+  const cgpa = totalCourses ? (totalQP / totalCourses).toFixed(2) : '0.00';
   document.getElementById('cgpa-display').textContent = `CGPA: ${cgpa}`;
 }
 
@@ -110,11 +133,12 @@ function parsePDF(text) {
     const courses = [];
     let match;
     while ((match = courseRegex.exec(block)) !== null) {
+      const gpa = parseFloat(match[4]);
       courses.push({
         id: match[1],
         name: match[2].trim(),
-        credit: parseFloat(match[3]),
-        mark: reverseMapGrade(parseFloat(match[4]))
+        gpa,
+        mark: reverseMapGrade(gpa)
       });
     }
     addSemester({ title, courses });
