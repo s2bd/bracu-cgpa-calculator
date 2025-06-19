@@ -1,4 +1,4 @@
-# bracu-cgpa-calculator
+# BRACU CGPA calculator
 CGPA calculator for BRAC University, supporting PDF uploading and real-time GPA auto-calculation.
 
 Grade boundaries dervied from the [official website](https://www.bracu.ac.bd/academics/policies-and-procedures).
